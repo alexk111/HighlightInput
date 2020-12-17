@@ -10,6 +10,7 @@ namespace HighlightInput
     class KeyboardOverlay : IDisposable
     {
         #region Tweakables
+        readonly double c_appearMillis = TimeSpan.FromSeconds(0.1f).TotalMilliseconds;
         readonly double c_fadeMillis = TimeSpan.FromSeconds(1).TotalMilliseconds;
         readonly double c_fadeStartDelay = TimeSpan.FromSeconds(1).TotalMilliseconds;
 
@@ -23,6 +24,12 @@ namespace HighlightInput
             { Keys.Oem8, "`" },
             { Keys.D0, "0" }, { Keys.D1, "1" }, { Keys.D2, "2" }, { Keys.D3, "3" }, { Keys.D4, "4" }, { Keys.D5, "5" }, { Keys.D6, "6" }, { Keys.D7, "7" }, { Keys.D8, "8" }, { Keys.D9, "9" },
             { Keys.Back, "Backspace" },
+            { Keys.Space, "Пробел" },
+            { Keys.Return, "Enter" },
+            { Keys.PageUp, "Page Up" },
+            { Keys.Next, "Page Down" },
+            { Keys.Escape, "Esc" },
+            { Keys.Up, "Стрелка Вверх" }, { Keys.Down, "Стрелка Вниз" }, { Keys.Left, "Стрелка Влево" }, { Keys.Right, "Стрелка Вправо" },
             { Keys.OemMinus, "-" }, { Keys.Oemplus, "+" },
         };
         #endregion
@@ -45,7 +52,7 @@ namespace HighlightInput
             m_overlay.DrawGraphics += DrawGraphics;
             m_overlay.FPS = 60;
             m_overlay.Create();
-            
+
             m_overlay.IsTopmost = true;
             m_overlay.Show();
         }
@@ -99,32 +106,42 @@ namespace HighlightInput
 
                 //don't show any modifiers on their own
                 //TODO: stop combinations of modifiers showing without actual keys
-                if (args.Modifiers == Keys.None && (str.Contains("Shift") || str.Contains("Control") || str.Contains("Menu")))
+                if ((args.Modifiers == Keys.None || args.Control || args.Alt || args.Shift) && (str.Contains("Shift") || str.Contains("Control") || str.Contains("Menu")))
                 {
                     return;
                 }
 
                 m_text = args.Modifiers == 0 ? str : $"{args.Modifiers} + {str}";
+                if (m_text.Contains("Control")) {
+                    m_text = m_text.Replace("Control", "Ctrl");
+                }
+                m_text = m_text.ToUpper();
                 m_shownTime = DateTime.Now;
             }
         }
-        
+
         //TODO: hook setup & destroy graphics properly
         private void DrawGraphics(object sender, GameOverlay.Windows.DrawGraphicsEventArgs e)
         {
             lock (m_lock)
             {
                 e.Graphics.ClearScene();
-                
+
                 if (!string.IsNullOrEmpty(m_text))
                 {
-                    GameOverlay.Drawing.Font font = e.Graphics.CreateFont("Calibri", 50, true);
+                    double millisElapsed = DateTime.Now.Subtract(m_shownTime).TotalMilliseconds;
+
+                    float sizeMultip = 1.0f;
+                    if (millisElapsed < c_appearMillis) {
+                      sizeMultip = 1.0f + (float)((1 - millisElapsed/c_appearMillis) * 0.2f);
+                    }
+
+                    GameOverlay.Drawing.Font font = e.Graphics.CreateFont("Calibri", 50 * sizeMultip, true);
                     GameOverlay.Drawing.Point textSize = e.Graphics.MeasureString(font, m_text);
 
                     int middleX = m_overlay.Width / 2;
                     int middleY = m_overlay.Height / 2;
 
-                    double millisElapsed = DateTime.Now.Subtract(m_shownTime).TotalMilliseconds;
                     if (millisElapsed > c_fadeStartDelay + c_fadeMillis)
                     {
                         return;
@@ -140,8 +157,8 @@ namespace HighlightInput
                     var fontColour = e.Graphics.CreateSolidBrush(0f, 0f, 0f, alpha);
 
                     var rect = GameOverlay.Drawing.Rectangle.Create((int)(middleX - textSize.X / 2), (int)(middleY - textSize.Y / 2), (int)textSize.X, (int)textSize.Y);
-                    Inflate(ref rect, c_paddingX, c_paddingY);
-                    
+                    Inflate(ref rect, (int)(c_paddingX*sizeMultip), (int)(c_paddingY*sizeMultip));
+
                     e.Graphics.FillRectangle(backColour, rect);
                     if(c_border > 0)
                     {
