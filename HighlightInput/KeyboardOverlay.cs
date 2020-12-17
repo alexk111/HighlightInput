@@ -30,7 +30,7 @@ namespace HighlightInput
             { Keys.Next, "Page Down" },
             { Keys.Escape, "Esc" },
             { Keys.Up, "Стрелка Вверх" }, { Keys.Down, "Стрелка Вниз" }, { Keys.Left, "Стрелка Влево" }, { Keys.Right, "Стрелка Вправо" },
-            { Keys.OemMinus, "-" }, { Keys.Oemplus, "+" },
+            { Keys.OemMinus, "Минус" }, { Keys.Oemplus, "Плюс" },
         };
         #endregion
 
