@@ -15,7 +15,7 @@ namespace HighlightInput
 
         readonly Dictionary<MouseButtons, GameOverlay.Drawing.Color> c_colours = new Dictionary<MouseButtons, GameOverlay.Drawing.Color>()
         {
-            { MouseButtons.Left, new GameOverlay.Drawing.Color(0.1f, 0.2f, 0.2f) },
+            { MouseButtons.Left, new GameOverlay.Drawing.Color(0f, 0.2f, 0.2f) },
             { MouseButtons.Right, new GameOverlay.Drawing.Color(0.7f, 0f, 0f) },
             { MouseButtons.Middle, new GameOverlay.Drawing.Color(0f, 0.5f, 1) },
         };
@@ -34,7 +34,7 @@ namespace HighlightInput
         public MouseOverlay()
         {
             //window must be big enough to accomodate the circle + border, add a little extra to help with clipping
-            int windowSize = (int)((c_radius + c_borderWidth) * 2.1f);
+            int windowSize = (int)((c_radius + c_borderWidth + 1) * 2.1f);
             m_overlay = new GameOverlay.Windows.GraphicsWindow(0, 0, windowSize, windowSize, new GameOverlay.Drawing.Graphics() { PerPrimitiveAntiAliasing = true, TextAntiAliasing = true });
             m_overlay.DrawGraphics += DrawGraphics;
             m_overlay.FPS = 60;
@@ -126,11 +126,12 @@ namespace HighlightInput
                 {
                     curColour = c_colours[MouseButtons.Left];
                 }
-                e.Graphics.FillCircle(e.Graphics.CreateSolidBrush(0.74f, 0.92f, 0.92f, 0.2f), new GameOverlay.Drawing.Circle(m_overlay.Width / 2, m_overlay.Height / 2, radius));
+                // e.Graphics.FillCircle(e.Graphics.CreateSolidBrush(0.74f, 0.92f, 0.92f, 0.2f), new GameOverlay.Drawing.Circle(m_overlay.Width / 2, m_overlay.Height / 2, radius));
 
                 //if there's a border, render just outside the radius
                 if (c_borderWidth > 0)
                 {
+                    e.Graphics.DrawCircle(e.Graphics.CreateSolidBrush(1, 1, 1, alpha), new GameOverlay.Drawing.Circle(m_overlay.Width / 2, m_overlay.Height / 2, radius + 1 + c_borderWidth / 2.0f), c_borderWidth * (radius / c_radius));
                     e.Graphics.DrawCircle(e.Graphics.CreateSolidBrush(curColour.R, curColour.G, curColour.B, alpha), new GameOverlay.Drawing.Circle(m_overlay.Width / 2, m_overlay.Height / 2, radius + c_borderWidth / 2.0f), c_borderWidth * (radius / c_radius));
                 }
             }
