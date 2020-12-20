@@ -20,6 +20,7 @@ namespace HighlightInput
                 msListener.MouseUp += (sender, eventArgs) => mouseOverlay.MouseUp(eventArgs);
 
                 kbListener.KeyDown += (sender, eventArgs) => kbOverlay.KeyDown(eventArgs);
+                kbListener.KeyUp += (sender, eventArgs) => kbOverlay.KeyUp(eventArgs);
 
                 msListener.Start();
                 kbListener.Start();

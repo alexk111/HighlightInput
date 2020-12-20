@@ -40,6 +40,7 @@ namespace HighlightInput
         private GameOverlay.Windows.WindowBounds m_desktopBounds;
 
         private DateTime m_shownTime = DateTime.MinValue;
+        private bool m_keyReleased = true;
         private string m_text;
         #endregion
 
@@ -81,6 +82,11 @@ namespace HighlightInput
                 int maxWidth = 1000;
                 int maxHeight = 200;
 
+                if ((m_desktopBounds.Bottom - middleY) < maxHeight)
+                {
+                    middleY = m_desktopBounds.Bottom - maxHeight;
+                }
+
                 return GameOverlay.Drawing.Rectangle.Create(middleX - maxWidth / 2, middleY, maxWidth, maxHeight);
             }
         }
@@ -108,14 +114,47 @@ namespace HighlightInput
                 //TODO: stop combinations of modifiers showing without actual keys
                 if ((args.Modifiers == Keys.None || args.Control || args.Alt || args.Shift) && (str.Contains("Shift") || str.Contains("Control") || str.Contains("Menu")))
                 {
-                    return;
+                    if (args.Modifiers == Keys.None)
+                    {
+                        if (str.Contains("Shift")) {
+                            str = "Shift";
+                        }
+                        if (str.Contains("Control")) {
+                            str = "Control";
+                        }
+                        if (str.Contains("Menu")) {
+                            str = "Alt";
+                        }
+                        m_text = str;
+                    }
+                    else
+                    {
+                        m_text = $"{args.Modifiers}";
+                    }
+                }
+                else
+                {
+                    m_text = args.Modifiers == 0 ? str : $"{args.Modifiers} + {str}";
                 }
 
-                m_text = args.Modifiers == 0 ? str : $"{args.Modifiers} + {str}";
                 if (m_text.Contains("Control")) {
                     m_text = m_text.Replace("Control", "Ctrl");
                 }
+                m_keyReleased = false;
                 m_text = m_text.ToUpper();
+                m_shownTime = DateTime.Now;
+            }
+        }
+
+        public void KeyUp(KeyEventArgs args)
+        {
+            lock(m_lock)
+            {
+                if (m_keyReleased)
+                {
+                    return;
+                }
+                m_keyReleased = true;
                 m_shownTime = DateTime.Now;
             }
         }
@@ -129,7 +168,7 @@ namespace HighlightInput
 
                 if (!string.IsNullOrEmpty(m_text))
                 {
-                    double millisElapsed = DateTime.Now.Subtract(m_shownTime).TotalMilliseconds;
+                    double millisElapsed = m_keyReleased ? DateTime.Now.Subtract(m_shownTime).TotalMilliseconds : 0;
 
                     float sizeMultip = 1.0f;
                     if (millisElapsed < c_appearMillis) {
