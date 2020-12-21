@@ -21,16 +21,33 @@ namespace HighlightInput
 
         readonly Dictionary<Keys, string> c_keyReplacements = new Dictionary<Keys, string>()
         {
+            { Keys.LWin, "Win" },
+            { Keys.Oem1, ";" },
+            { Keys.Oem5, "\\" },
+            { Keys.Oem6, "]" },
+            { Keys.Oem7, "'" },
             { Keys.Oem8, "`" },
+            { Keys.Oemtilde, "`" },
+            { Keys.Oemcomma, "," },
+            { Keys.OemPeriod, "." },
+            { Keys.OemQuestion, "/" },
+            { Keys.OemOpenBrackets, "[" },
+            { Keys.OemMinus, "Минус" },
+            { Keys.Oemplus, "=" },
+            { Keys.Add, "Плюс" },
+            { Keys.Subtract, "Минус" },
+            { Keys.Multiply, "*" },
+            { Keys.Divide, "/" },
             { Keys.D0, "0" }, { Keys.D1, "1" }, { Keys.D2, "2" }, { Keys.D3, "3" }, { Keys.D4, "4" }, { Keys.D5, "5" }, { Keys.D6, "6" }, { Keys.D7, "7" }, { Keys.D8, "8" }, { Keys.D9, "9" },
+            { Keys.NumPad0, "0" }, { Keys.NumPad1, "1" }, { Keys.NumPad2, "2" }, { Keys.NumPad3, "3" }, { Keys.NumPad4, "4" }, { Keys.NumPad5, "5" }, { Keys.NumPad6, "6" }, { Keys.NumPad7, "7" }, { Keys.NumPad8, "8" }, { Keys.NumPad9, "9" },
             { Keys.Back, "Backspace" },
+            { Keys.Decimal, "." },
             { Keys.Space, "Пробел" },
             { Keys.Return, "Enter" },
             { Keys.PageUp, "Page Up" },
             { Keys.Next, "Page Down" },
             { Keys.Escape, "Esc" },
             { Keys.Up, "Стрелка Вверх" }, { Keys.Down, "Стрелка Вниз" }, { Keys.Left, "Стрелка Влево" }, { Keys.Right, "Стрелка Вправо" },
-            { Keys.OemMinus, "Минус" }, { Keys.Oemplus, "Плюс" },
         };
         #endregion
 
